@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkyStats – Cities: Skylines II</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@200;300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 1200px;
+      height: 750px;
+      overflow: hidden;
+      background: #060912;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      position: relative;
+    }
+
+    /* Perspective grid floor */
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,210,255,0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,210,255,0.045) 1px, transparent 1px);
+      background-size: 70px 70px;
+    }
+    .grid-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 50%, transparent 40%, #060912 100%);
+    }
+
+    /* Ambient glows */
+    .glow-center {
+      position: absolute;
+      width: 700px; height: 700px;
+      background: radial-gradient(ellipse, rgba(0,160,255,0.07) 0%, transparent 65%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .glow-amber {
+      position: absolute;
+      width: 340px; height: 280px;
+      background: radial-gradient(ellipse, rgba(255,165,50,0.06) 0%, transparent 70%);
+      bottom: 80px; right: 180px;
+      pointer-events: none;
+    }
+    .glow-blue {
+      position: absolute;
+      width: 280px; height: 280px;
+      background: radial-gradient(ellipse, rgba(0,220,255,0.06) 0%, transparent 70%);
+      top: 60px; left: 160px;
+      pointer-events: none;
+    }
+
+    /* Corner brackets */
+    .corner {
+      position: absolute;
+      width: 44px; height: 44px;
+      opacity: 0.22;
+    }
+    .corner svg { width: 100%; height: 100%; }
+    .corner.tl { top: 28px; left: 28px; }
+    .corner.tr { top: 28px; right: 28px; transform: scaleX(-1); }
+    .corner.bl { bottom: 28px; left: 28px; transform: scaleY(-1); }
+    .corner.br { bottom: 28px; right: 28px; transform: scale(-1,-1); }
+
+    /* HUD ticks */
+    .hud-top, .hud-bot {
+      position: absolute;
+      left: 0; right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 0;
+    }
+    .hud-top { top: 28px; }
+    .hud-bot { bottom: 28px; }
+    .hud-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: rgba(0,210,255,0.28);
+      text-transform: uppercase;
+      padding: 0 24px;
+      border-left: 1px solid rgba(0,210,255,0.12);
+    }
+    .hud-label:first-child { border-left: none; }
+
+    /* Horizontal rule lines */
+    .rule-line {
+      position: absolute;
+      left: 60px; right: 60px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,210,255,0.1) 20%, rgba(0,210,255,0.1) 80%, transparent);
+    }
+    .rule-top { top: 52px; }
+    .rule-bot { bottom: 52px; }
+
+    /* Main logo wrapper */
+    .logo-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+      z-index: 10;
+    }
+
+    /* Logo mark */
+    .logo-mark-wrap {
+      position: relative;
+    }
+    .version-tag {
+      position: absolute;
+      top: 6px; right: -72px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: rgba(255,175,70,0.75);
+      border: 1px solid rgba(255,175,70,0.25);
+      padding: 3px 7px;
+      border-radius: 2px;
+    }
+
+    /* Logo text */
+    .logo-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 104px;
+      letter-spacing: 18px;
+      line-height: 1;
+      background: linear-gradient(120deg, #00D4FF 0%, #ffffff 42%, #FFB347 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      padding-right: 18px; /* compensate letter-spacing */
+    }
+
+    .divider-line {
+      width: 240px; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,210,255,0.5) 30%, rgba(255,179,71,0.5) 70%, transparent);
+      margin: -8px 0;
+    }
+
+    .logo-sub {
+      font-size: 17px;
+      font-weight: 300;
+      letter-spacing: 8px;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+    }
+    .logo-tagline {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: rgba(0,210,255,0.45);
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="grid-bg"></div>
+  <div class="glow-center"></div>
+  <div class="glow-amber"></div>
+  <div class="glow-blue"></div>
+
+  <!-- Corner brackets -->
+  <div class="corner tl">
+    <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M44 0 L0 0 L0 44" stroke="#00D4FF" stroke-width="1.5"/>
+      <path d="M36 0 L0 0 L0 36" stroke="#00D4FF" stroke-width="0.5" opacity="0.4"/>
+    </svg>
+  </div>
+  <div class="corner tr">
+    <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M44 0 L0 0 L0 44" stroke="#00D4FF" stroke-width="1.5"/>
+      <path d="M36 0 L0 0 L0 36" stroke="#00D4FF" stroke-width="0.5" opacity="0.4"/>
+    </svg>
+  </div>
+  <div class="corner bl">
+    <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M44 0 L0 0 L0 44" stroke="#00D4FF" stroke-width="1.5"/>
+      <path d="M36 0 L0 0 L0 36" stroke="#00D4FF" stroke-width="0.5" opacity="0.4"/>
+    </svg>
+  </div>
+  <div class="corner br">
+    <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M44 0 L0 0 L0 44" stroke="#00D4FF" stroke-width="1.5"/>
+      <path d="M36 0 L0 0 L0 36" stroke="#00D4FF" stroke-width="0.5" opacity="0.4"/>
+    </svg>
+  </div>
+
+  <div class="rule-line rule-top"></div>
+  <div class="rule-line rule-bot"></div>
+
+  <div class="hud-top">
+    <span class="hud-label">Population</span>
+    <span class="hud-label">Economy</span>
+    <span class="hud-label">Traffic</span>
+    <span class="hud-label">Services</span>
+    <span class="hud-label">Environment</span>
+  </div>
+
+  <div class="hud-bot">
+    <span class="hud-label">Cities: Skylines II</span>
+    <span class="hud-label">Statistics Mod</span>
+    <span class="hud-label">Open Source</span>
+  </div>
+
+  <!-- Logo -->
+  <div class="logo-wrapper">
+
+    <div class="logo-mark-wrap">
+      <div class="version-tag">v 1.8</div>
+
+      <!-- The logo mark SVG -->
+      <svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#00A8FF" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#000820" stop-opacity="0.8"/>
+          </linearGradient>
+          <linearGradient id="scanLine" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="transparent"/>
+            <stop offset="50%" stop-color="#00D4FF"/>
+            <stop offset="100%" stop-color="transparent"/>
+          </linearGradient>
+          <filter id="blueGlow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <clipPath id="hexClip">
+            <polygon points="120,14 206,61 206,179 120,226 34,179 34,61"/>
+          </clipPath>
+        </defs>
+
+        <!-- Outer hex rings -->
+        <polygon points="120,14 206,61 206,179 120,226 34,179 34,61"
+                 fill="none" stroke="#00D4FF" stroke-width="1.2" opacity="0.35"/>
+        <polygon points="120,24 196,67 196,173 120,216 44,173 44,67"
+                 fill="none" stroke="#00D4FF" stroke-width="0.5" opacity="0.12"/>
+
+        <!-- Hex tick marks at vertices -->
+        <line x1="120" y1="14" x2="120" y2="24" stroke="#00D4FF" stroke-width="2" opacity="0.7"/>
+        <line x1="206" y1="61" x2="197.2" y2="66.1" stroke="#00D4FF" stroke-width="2" opacity="0.7"/>
+        <line x1="206" y1="179" x2="197.2" y2="173.9" stroke="#00D4FF" stroke-width="2" opacity="0.7"/>
+        <line x1="120" y1="226" x2="120" y2="216" stroke="#00D4FF" stroke-width="2" opacity="0.7"/>
+        <line x1="34" y1="179" x2="42.8" y2="173.9" stroke="#00D4FF" stroke-width="2" opacity="0.7"/>
+        <line x1="34" y1="61" x2="42.8" y2="66.1" stroke="#00D4FF" stroke-width="2" opacity="0.7"/>
+
+        <!-- Sky gradient background inside hex -->
+        <polygon points="120,14 206,61 206,179 120,226 34,179 34,61" fill="url(#skyGrad)" clip-path="url(#hexClip)"/>
+
+        <!-- Ground plane -->
+        <rect x="34" y="188" width="172" height="38" clip-path="url(#hexClip)" fill="#060912" opacity="0.8"/>
+
+        <!-- BUILDINGS: isometric-style, ground at y=188 -->
+
+        <!-- B1: far left, short -->
+        <!-- front face -->
+        <polygon points="50,188 50,158 66,158 66,188" fill="#0D3D66"/>
+        <!-- top face (parallelogram shifted 8px right, 7px up) -->
+        <polygon points="50,158 66,158 74,151 58,151" fill="#1A6BA0"/>
+        <!-- right shadow face -->
+        <polygon points="66,158 74,151 74,188 66,188" fill="#061D36"/>
+        <!-- windows -->
+        <rect x="53" y="161" width="5" height="4" rx="0.5" fill="#FFB347" opacity="0.75"/>
+        <rect x="60" y="161" width="5" height="4" rx="0.5" fill="#FFB347" opacity="0.4"/>
+        <rect x="53" y="170" width="5" height="4" rx="0.5" fill="#00D4FF" opacity="0.45"/>
+        <rect x="60" y="170" width="5" height="4" rx="0.5" fill="#00D4FF" opacity="0.25"/>
+        <rect x="53" y="179" width="5" height="4" rx="0.5" fill="#FFB347" opacity="0.35"/>
+
+        <!-- B2: second, tall -->
+        <polygon points="74,188 74,118 94,118 94,188" fill="#0F4573"/>
+        <polygon points="74,118 94,118 104,109 84,109" fill="#1A6DB5"/>
+        <polygon points="94,118 104,109 104,188 94,188" fill="#071E38"/>
+        <!-- windows 2 cols -->
+        <rect x="77" y="122" width="6" height="5" rx="0.5" fill="#00D4FF" opacity="0.65"/>
+        <rect x="86" y="122" width="6" height="5" rx="0.5" fill="#00D4FF" opacity="0.4"/>
+        <rect x="77" y="132" width="6" height="5" rx="0.5" fill="#FFB347" opacity="0.8"/>
+        <rect x="86" y="132" width="6" height="5" rx="0.5" fill="#FFB347" opacity="0.45"/>
+        <rect x="77" y="142" width="6" height="5" rx="0.5" fill="#00D4FF" opacity="0.35"/>
+        <rect x="86" y="142" width="6" height="5" rx="0.5" fill="#00D4FF" opacity="0.5"/>
+        <rect x="77" y="152" width="6" height="5" rx="0.5" fill="#FFB347" opacity="0.55"/>
+        <rect x="86" y="152" width="6" height="5" rx="0.5" fill="#FFB347" opacity="0.3"/>
+        <rect x="77" y="162" width="6" height="5" rx="0.5" fill="#00D4FF" opacity="0.3"/>
+        <rect x="77" y="172" width="6" height="5" rx="0.5" fill="#FFB347" opacity="0.5"/>
+        <rect x="86" y="172" width="6" height="5" rx="0.5" fill="#00D4FF" opacity="0.3"/>
+
+        <!-- B3: center-left, medium-short -->
+        <polygon points="104,188 104,163 120,163 120,188" fill="#0A2E4D"/>
+        <polygon points="104,163 120,163 128,156 112,156" fill="#124A7A"/>
+        <polygon points="120,163 128,156 128,188 120,188" fill="#060F20"/>
+        <rect x="107" y="166" width="5" height="4" rx="0.5" fill="#FFB347" opacity="0.7"/>
+        <rect x="114" y="166" width="5" height="4" rx="0.5" fill="#FFB347" opacity="0.35"/>
+        <rect x="107" y="175" width="5" height="4" rx="0.5" fill="#00D4FF" opacity="0.4"/>
+
+        <!-- B4: tallest, center-right -->
+        <polygon points="128,188 128,92 152,92 152,188" fill="#0D3A5C"/>
+        <polygon points="128,92 152,92 164,80 140,80" fill="#1A6DB5"/>
+        <polygon points="152,92 164,80 164,188 152,188" fill="#061829"/>
+        <!-- windows 3 rows x 2 cols -->
+        <rect x="131" y="96" width="8" height="6" rx="0.5" fill="#00D4FF" opacity="0.7"/>
+        <rect x="143" y="96" width="8" height="6" rx="0.5" fill="#00D4FF" opacity="0.5"/>
+        <rect x="131" y="108" width="8" height="6" rx="0.5" fill="#FFB347" opacity="0.85"/>
+        <rect x="143" y="108" width="8" height="6" rx="0.5" fill="#FFB347" opacity="0.5"/>
+        <rect x="131" y="120" width="8" height="6" rx="0.5" fill="#00D4FF" opacity="0.4"/>
+        <rect x="143" y="120" width="8" height="6" rx="0.5" fill="#00D4FF" opacity="0.65"/>
+        <rect x="131" y="132" width="8" height="6" rx="0.5" fill="#FFB347" opacity="0.55"/>
+        <rect x="143" y="132" width="8" height="6" rx="0.5" fill="#FFB347" opacity="0.3"/>
+        <rect x="131" y="144" width="8" height="6" rx="0.5" fill="#00D4FF" opacity="0.35"/>
+        <rect x="143" y="144" width="8" height="6" rx="0.5" fill="#00D4FF" opacity="0.55"/>
+        <rect x="131" y="156" width="8" height="6" rx="0.5" fill="#FFB347" opacity="0.45"/>
+        <rect x="143" y="156" width="8" height="6" rx="0.5" fill="#00D4FF" opacity="0.3"/>
+        <rect x="131" y="168" width="8" height="6" rx="0.5" fill="#FFB347" opacity="0.6"/>
+        <rect x="143" y="168" width="8" height="6" rx="0.5" fill="#FFB347" opacity="0.35"/>
+        <rect x="131" y="178" width="8" height="6" rx="0.5" fill="#00D4FF" opacity="0.3"/>
+        <!-- Antenna -->
+        <line x1="140" y1="80" x2="140" y2="62" stroke="#00D4FF" stroke-width="1.5" opacity="0.85"/>
+        <circle cx="140" cy="60" r="3" fill="#00D4FF" opacity="0.9" filter="url(#blueGlow)"/>
+        <circle cx="140" cy="60" r="6" fill="#00D4FF" opacity="0.15"/>
+        <circle cx="140" cy="60" r="9" fill="#00D4FF" opacity="0.06"/>
+
+        <!-- B5: right, medium-tall -->
+        <polygon points="164,188 164,130 182,130 182,188" fill="#0D3A5C"/>
+        <polygon points="164,130 182,130 190,122 172,122" fill="#1A5C8A"/>
+        <polygon points="182,130 190,122 190,188 182,188" fill="#061829"/>
+        <rect x="167" y="134" width="6" height="5" rx="0.5" fill="#FFB347" opacity="0.7"/>
+        <rect x="176" y="134" width="5" height="5" rx="0.5" fill="#00D4FF" opacity="0.5"/>
+        <rect x="167" y="144" width="6" height="5" rx="0.5" fill="#00D4FF" opacity="0.4"/>
+        <rect x="176" y="144" width="5" height="5" rx="0.5" fill="#FFB347" opacity="0.35"/>
+        <rect x="167" y="154" width="6" height="5" rx="0.5" fill="#FFB347" opacity="0.55"/>
+        <rect x="167" y="164" width="6" height="5" rx="0.5" fill="#00D4FF" opacity="0.3"/>
+        <rect x="176" y="164" width="5" height="5" rx="0.5" fill="#FFB347" opacity="0.4"/>
+        <rect x="167" y="174" width="6" height="5" rx="0.5" fill="#FFB347" opacity="0.3"/>
+
+        <!-- Stats line graph overlaid across rooftops -->
+        <polyline
+          points="58,188 84,175 120,181 140,148 164,158 186,138"
+          fill="none" stroke="#00D4FF" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round" opacity="0.75"/>
+        <!-- Data nodes -->
+        <circle cx="58"  cy="188" r="3.5" fill="#00D4FF" opacity="0.8"/>
+        <circle cx="84"  cy="175" r="3.5" fill="#00D4FF" opacity="0.8"/>
+        <circle cx="120" cy="181" r="3.5" fill="#00D4FF" opacity="0.8"/>
+        <circle cx="140" cy="148" r="4.5" fill="#FFB347" opacity="1"/>
+        <circle cx="140" cy="148" r="8" fill="#FFB347" opacity="0.15"/>
+        <circle cx="164" cy="158" r="3.5" fill="#00D4FF" opacity="0.8"/>
+        <circle cx="186" cy="138" r="3.5" fill="#00D4FF" opacity="0.8"/>
+
+        <!-- Scan line -->
+        <rect x="34" y="148" width="172" height="1" fill="url(#scanLine)" opacity="0.2" clip-path="url(#hexClip)"/>
+
+        <!-- Stat readout bottom-right inside hex -->
+        <text x="194" y="180" font-family="'Share Tech Mono', monospace" font-size="8"
+              fill="#FFB347" opacity="0.65" text-anchor="end">+12.4%</text>
+        <text x="194" y="190" font-family="'Share Tech Mono', monospace" font-size="8"
+              fill="#00D4FF" opacity="0.45" text-anchor="end">1.24M pop</text>
+      </svg>
+    </div>
+
+    <!-- Text lockup -->
+    <div style="display:flex; flex-direction:column; align-items:center; gap:14px;">
+      <div class="logo-name">CityStats</div>
+      <div class="divider-line"></div>
+      <div class="logo-sub">Cities: Skylines II</div>
+      <div class="logo-tagline">Statistics &amp; Analytics Overlay</div>
+    </div>
+
+  </div>
+
+</body>
+</html>

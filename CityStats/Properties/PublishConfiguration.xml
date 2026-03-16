@@ -1,0 +1,48 @@
+﻿<Publish>
+	<!--Id must be set in order to update existed mod. it is not required for publishing mod for the first time-->
+	<ModId Value="137980" />
+	<!--Name of the mod to display to players-->
+	<DisplayName Value="CityStats" />
+	<!--Short description of the mod-->
+	<ShortDescription Value="Show some stats in real time." />
+	<!--Long description of the mod. Single line or multi line. Supports minimal markdown subset-->
+	<!--LongDescription Value="Show some stats in real time." /-->
+	<LongDescription>
+Show some stats in real time.
+		Citizen count -> All humans moving with some navigation point set. Excluded animals and wildlife.
+		Service Vehicles -> Any car moving with a service type set (Ambulance, Firetruck, Police...). Excluded Parked.
+		Parked Vehicles -> Any car parked, included services not in use, cars in-house garage, parked in streets or parkings...
+		Moving Vehicles -> Any Personal Vehicle moving with some navigation point set. Excluded parked vehicles, services vehicles, bycicles. (For example, I would count as moving vehicles those that pass on the main highway but are not coming into the city.)
+		
+As you can see, the numbers aren't perfect, but they're a good estimate of how many entities are in the game in real time. 
+I recommend starting with a test in a new city with 2 or 3 basic buildings to see how they compare to reality and understand what's going on.
+I have verified that there is no difference in the number of citizens, but the number of vehicles on the road does vary slightly because it does not count the first delivery vehicles when a business opens, for example.
+		
+¡Un abrazo R4pela! ¡Tremendos videos!
+
+	</LongDescription>
+	<!--Thumbnail-->
+	<Thumbnail Value="Properties/Thumbnail.png" />
+	<!--Screenshot, can be set multiple times-->
+	<Screenshot Value="" />
+	<!--Tag, can be set multiple times-->
+	<Tag Value="" />
+	<!--Link to the forum post where the mod can be discussed-->
+	<ForumLink Value="" />
+	<!--Version of the mod-->
+	<ModVersion Value="1.8" />
+	<!--Recommended version of the base game to use the mod-->
+	<GameVersion Value="1.*.*" />
+	<!--Dependency for the mod, can be set multiple times-->
+	<Dependency Id="" />
+	<!--Required DLC, can be set multiple times. Supported values are "Landmark Buildings", "San Fransisco Set", "Beach Properties", "Urban Promenades", "Modern Architecture"-->
+	<RequiredDLC Value="" />
+	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
+	<ChangeLog Value="Better stats" />
+	<!--<ChangeLog>
+	</ChangeLog>-->
+	<!--External link, can be set multiple times. supported types are "discord", "github", "youtube", "twitch", "x", "paypal", "patreon", "buymeacoffee", "kofi", "crowdin", "gitlab", "gofundme"-->
+	<ExternalLink Type="" Url="" />
+	<!--Supported values Public, Private, Unlisted-->
+	<AccessLevel Value="Public" />
+</Publish>
