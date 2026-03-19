@@ -16,12 +16,22 @@ namespace CityStats
         private EntityQuery _serviceVehicleQuery;
         private EntityQuery _parkedCarQuery;
         private EntityQuery _movingCarQuery;
+        private EntityQuery _deliveryVehicleQuery;
+        private EntityQuery _bikesQuery;
+        private EntityQuery _taxisVehicleQuery;
+        private EntityQuery _trucksVehicleQuery;
+
         private int _frameSkip;
 
         public static int CurrentCitizenCount { get; private set; }
         public static int CurrentServiceVehicleCount { get; private set; }
         public static int CurrentParkedCarCount { get; private set; }
         public static int CurrentMovingCarCount { get; private set; }
+        public static int CurrentDeliveryVehicleCount { get; private set; }
+        public static int CurrentTaxisVehicleCount { get; private set; }
+        public static int CurrentTrucksVehicleCount { get; private set; }
+        
+        public static int CurrentBikesCount { get; private set; }
 
         protected override void OnCreate()
         {
@@ -120,6 +130,99 @@ namespace CityStats
                     ComponentType.ReadOnly<Game.Objects.Placeholder>(),
                 }
             });
+            
+            _taxisVehicleQuery = GetEntityQuery(new EntityQueryDesc
+            {
+                All = new ComponentType[]
+                {
+                    ComponentType.ReadOnly<Game.Vehicles.Vehicle>(),
+                    ComponentType.ReadOnly<Game.Vehicles.Car>(),
+                    ComponentType.ReadOnly<Game.Vehicles.Taxi>(),
+                    ComponentType.ReadOnly<Game.Objects.Moving>(),
+                },
+                Any = new ComponentType[]
+                {
+                    ComponentType.ReadOnly<Game.Vehicles.CarNavigation>(),
+                    ComponentType.ReadOnly<Game.Vehicles.CarCurrentLane>(),
+                },
+                None = new ComponentType[]
+                {
+                    ComponentType.ReadOnly<Game.Vehicles.WorkVehicle>(),
+                    ComponentType.ReadOnly<Game.Vehicles.ParkedCar>(),
+                    ComponentType.ReadOnly<Deleted>(),
+                    ComponentType.ReadOnly<Temp>(),
+                    ComponentType.ReadOnly<Game.Objects.Unspawned>(),
+                    ComponentType.ReadOnly<Game.Objects.Placeholder>(),
+                }
+            });
+            
+
+            _trucksVehicleQuery = GetEntityQuery(new EntityQueryDesc
+            {
+                All = new ComponentType[]
+                {
+                    ComponentType.ReadOnly<Game.Vehicles.Vehicle>(),
+                    ComponentType.ReadOnly<Game.Vehicles.Car>(),
+                    ComponentType.ReadOnly<Game.Objects.Moving>(),
+                    ComponentType.ReadOnly<Game.Vehicles.DeliveryTruck>(),
+                },
+                Any = new ComponentType[]
+                {
+                    ComponentType.ReadOnly<Game.Vehicles.CarNavigation>(),
+                    ComponentType.ReadOnly<Game.Vehicles.CarCurrentLane>(),
+                },
+                None = new ComponentType[]
+                {
+                    ComponentType.ReadOnly<Game.Vehicles.WorkVehicle>(),
+                    ComponentType.ReadOnly<Game.Vehicles.ParkedCar>(),
+                    ComponentType.ReadOnly<Deleted>(),
+                    ComponentType.ReadOnly<Temp>(),
+                    ComponentType.ReadOnly<Game.Objects.Unspawned>(),
+                    ComponentType.ReadOnly<Game.Objects.Placeholder>(),
+                }
+            });
+
+            _deliveryVehicleQuery = GetEntityQuery(new EntityQueryDesc
+            {
+                All = new ComponentType[]
+                {
+                    ComponentType.ReadOnly<Game.Vehicles.Vehicle>(),
+                    ComponentType.ReadOnly<Game.Vehicles.Car>(),
+                    ComponentType.ReadOnly<Game.Objects.Moving>(),
+                    ComponentType.ReadOnly<Game.Vehicles.GoodsDeliveryVehicle>(),
+                },
+                Any = new ComponentType[]
+                {
+                    ComponentType.ReadOnly<Game.Vehicles.CarNavigation>(),
+                    ComponentType.ReadOnly<Game.Vehicles.CarCurrentLane>(),
+                },
+                None = new ComponentType[]
+                {
+                    ComponentType.ReadOnly<Game.Vehicles.WorkVehicle>(),
+                    ComponentType.ReadOnly<Game.Vehicles.ParkedCar>(),
+                    ComponentType.ReadOnly<Deleted>(),
+                    ComponentType.ReadOnly<Temp>(),
+                    ComponentType.ReadOnly<Game.Objects.Unspawned>(),
+                    ComponentType.ReadOnly<Game.Objects.Placeholder>(),
+                }
+            });
+            
+            _bikesQuery = GetEntityQuery(new EntityQueryDesc
+            {
+                All = new ComponentType[]
+                {
+                    ComponentType.ReadOnly<Game.Vehicles.Bicycle>(),
+                    ComponentType.ReadOnly<Game.Objects.Moving>(),
+                },
+                None = new ComponentType[]
+                {
+                    ComponentType.ReadOnly<Game.Vehicles.ParkedCar>(),
+                    ComponentType.ReadOnly<Deleted>(),
+                    ComponentType.ReadOnly<Temp>(),
+                    ComponentType.ReadOnly<Game.Objects.Unspawned>(),
+                    ComponentType.ReadOnly<Game.Objects.Placeholder>(),
+                }
+            });
 
             Log.Info("VehicleCountSystem created");
         }
@@ -138,6 +241,10 @@ namespace CityStats
             CurrentServiceVehicleCount = _serviceVehicleQuery.CalculateEntityCount();
             CurrentParkedCarCount = _parkedCarQuery.CalculateEntityCount();
             CurrentMovingCarCount = _movingCarQuery.CalculateEntityCount();
+            CurrentDeliveryVehicleCount = _deliveryVehicleQuery.CalculateEntityCount();
+            CurrentTaxisVehicleCount = _taxisVehicleQuery.CalculateEntityCount();
+            CurrentTrucksVehicleCount = _trucksVehicleQuery.CalculateEntityCount();
+            CurrentBikesCount = _bikesQuery.CalculateEntityCount();
         }
 
         protected override void OnDestroy()

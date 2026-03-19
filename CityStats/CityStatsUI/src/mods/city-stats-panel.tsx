@@ -5,6 +5,10 @@ const citizenCountBinding = bindValue<number>("citystats", "citizenCount");
 const serviceVehicleCountBinding = bindValue<number>("citystats", "serviceVehicleCount");
 const parkedCarCountBinding = bindValue<number>("citystats", "parkedCarCount");
 const movingCarCountBinding = bindValue<number>("citystats", "movingCarCount");
+const deliveryVehicleCountBinding = bindValue<number>("citystats", "deliveryVehicleCount");
+const taxisVehicleCountBinding = bindValue<number>("citystats", "taxisVehicleCount");
+const trucksVehicleCountBinding = bindValue<number>("citystats", "trucksVehicleCount");
+const bikesCountBinding = bindValue<number>("citystats", "bikesCount");
 
 const StatRow = ({ label, value }: { label: string; value: number | null | undefined }) => (
     <div
@@ -25,6 +29,10 @@ export const CityStatsPanel = () => {
     const serviceVehicleCount = useValue(serviceVehicleCountBinding);
     const parkedCarCount = useValue(parkedCarCountBinding);
     const movingCarCount = useValue(movingCarCountBinding);
+    const deliveryVehicleCount = useValue(deliveryVehicleCountBinding);
+    const taxisVehicleCount = useValue(taxisVehicleCountBinding);
+    const trucksVehicleCount = useValue(trucksVehicleCountBinding);
+    const bikesCount = useValue(bikesCountBinding);
 
     React.useEffect(() => {
         const id = window.setInterval(() => {
@@ -40,10 +48,10 @@ export const CityStatsPanel = () => {
                 position: "fixed",
                 top: "64rem",
                 right: "16rem",
-                minWidth: "220rem",
+                minWidth: "280rem",
                 padding: "12rem 16rem",
                 borderRadius: "10rem",
-                background: "rgba(20, 20, 28, 0.85)",
+                background: "rgba(20, 20, 28, 0.75)",
                 color: "#fff",
                 zIndex: 9999,
                 display: "flex",
@@ -56,9 +64,13 @@ export const CityStatsPanel = () => {
             </span>
 
             <StatRow label="Ciudadanos" value={citizenCount} />
-            <StatRow label="Vehículos de servicio" value={serviceVehicleCount} />
             <StatRow label="Coches aparcados" value={parkedCarCount} />
-            <StatRow label="Coches en movimiento" value={movingCarCount} />
+            <StatRow label="Total de vehiculos" value={movingCarCount + serviceVehicleCount} />
+            <StatRow label="Vehiculos personales" value={movingCarCount - (deliveryVehicleCount + taxisVehicleCount + trucksVehicleCount)} />
+            <StatRow label="Vehículos de servicio" value={serviceVehicleCount} />
+            <StatRow label="Vehículos de entrega" value={deliveryVehicleCount + trucksVehicleCount} />
+            <StatRow label="Taxis" value={taxisVehicleCount} />
+            <StatRow label="Bicicletas" value={bikesCount} />
         </div>
     );
 };

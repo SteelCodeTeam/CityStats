@@ -8,18 +8,28 @@
 	<!--Long description of the mod. Single line or multi line. Supports minimal markdown subset-->
 	<!--LongDescription Value="Show some stats in real time." /-->
 	<LongDescription>
-Show some stats in real time.
-		Citizen count -> All humans moving with some navigation point set. Excluded animals and wildlife.
-		Service Vehicles -> Any car moving with a service type set (Ambulance, Firetruck, Police...). Excluded Parked.
-		Parked Vehicles -> Any car parked, included services not in use, cars in-house garage, parked in streets or parkings...
-		Moving Vehicles -> Any Personal Vehicle moving with some navigation point set. Excluded parked vehicles, services vehicles, bycicles. (For example, I would count as moving vehicles those that pass on the main highway but are not coming into the city.)
-		
-As you can see, the numbers aren't perfect, but they're a good estimate of how many entities are in the game in real time. 
-I recommend starting with a test in a new city with 2 or 3 basic buildings to see how they compare to reality and understand what's going on.
-I have verified that there is no difference in the number of citizens, but the number of vehicles on the road does vary slightly because it does not count the first delivery vehicles when a business opens, for example.
-		
-¡Un abrazo R4pela! ¡Tremendos videos!
+# Show some stats in real time.
 
+## Counts
+* Citizen count -> All humans moving with some navigation point set. Excluded animals and wildlife.
+* Service Vehicles -> Any car moving with a service type set (Ambulance, Firetruck, Police...). Excluded Parked.
+* Parked Vehicles -> Any car parked, included services not in use, cars in-house garage, parked in streets or parkings...
+* Total Moving Vehicles -> Any Vehicle moving with some navigation point set. Excluded parked vehicles and bycicles. (For example, I would count as moving vehicles those that pass on the main highway but are not coming into the city.)
+* Personal Vehicles -> Any Personal Vehicle moving with some navigation point set. Excluded parked vehicles and bycicles, services, delivery and taxis. (For example, I would count as moving vehicles those that pass on the main highway but are not coming into the city.)
+* Taxis -> Any Taxi in the city.
+* Delivery Vehicles -> Any Delivery Vehicle (and trucks) moving with some navigation point set. Excluded parked vehicles.
+* Bicycles -> Any Bicycle moving with some navigation point set. 
+		
+## Notes
+As you can see, the numbers aren't perfect, but they're a good estimate of how many entities are in the game in real time. I recommend starting with a test in a new city with 2 or 3 basic buildings to see how they compare to reality and understand what's going on.  I have verified that there is no difference in the number of citizens, but the number of vehicles on the road does vary slightly because it does not count the first delivery vehicles when a business opens, for example.
+
+## Contact
+If there is a bug, this is my first mod! Be patient! If you still have new functionality, or if you receive an error message, please use github or discord.
+
+* Discord: RuDaHee
+* Github: https://github.com/SteelCodeTeam/CityStats
+
+¡Un abrazo R4pela! ¡Tremendos videos!
 	</LongDescription>
 	<!--Thumbnail-->
 	<Thumbnail Value="Properties/Thumbnail.png" />
@@ -30,7 +40,7 @@ I have verified that there is no difference in the number of citizens, but the n
 	<!--Link to the forum post where the mod can be discussed-->
 	<ForumLink Value="" />
 	<!--Version of the mod-->
-	<ModVersion Value="1.8" />
+	<ModVersion Value="1.8.5b" />
 	<!--Recommended version of the base game to use the mod-->
 	<GameVersion Value="1.*.*" />
 	<!--Dependency for the mod, can be set multiple times-->
